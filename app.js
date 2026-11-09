@@ -345,14 +345,14 @@ function initReveals() {
     $$("[data-count]", e.target).forEach(countUp);
     io.unobserve(e.target);
   }), { threshold: 0.15 });
-  $$(".reveal, #steps").forEach((el, i) => {
+  $$(".reveal").forEach((el, i) => {
     el.style.transitionDelay = el.classList.contains("card") ? `${(i % 4) * 90}ms` : "0ms";
     io.observe(el);
   });
 }
 function initSpotlights() {
   if (calm || !window.matchMedia("(pointer: fine)").matches) return;
-  $$(".card").forEach((card) => card.addEventListener("pointermove", (e) => {
+  $$(".card, .tile").forEach((card) => card.addEventListener("pointermove", (e) => {
     const r = card.getBoundingClientRect();
     card.style.setProperty("--mx", `${e.clientX - r.left}px`);
     card.style.setProperty("--my", `${e.clientY - r.top}px`);

@@ -372,10 +372,6 @@ h2 em { font-style: normal; }
 @keyframes shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
 
 /* ---------- How it works ---------- */
-.steps { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 44px; }
-.wire { position: absolute; left: 0; right: 0; top: 34px; height: 4px; z-index: -1; overflow: visible; }
-.wire path { stroke: url(#wireGrad); stroke-width: 2; fill: none; stroke-dasharray: 1400; stroke-dashoffset: 1400; transition: stroke-dashoffset 2.2s var(--ease); }
-.steps.in .wire path { stroke-dashoffset: 0; }
 .card {
   position: relative;
   padding: 22px;
@@ -454,13 +450,12 @@ footer { margin-top: 120px; padding: 40px 0 30px; border-top: 1px solid var(--li
 @media (max-width: 980px) {
   .hero-grid, .play, .install { grid-template-columns: 1fr; }
   .term { --ry: 0deg; --rx: 0deg; }
-  .steps, .stats { grid-template-columns: repeat(2, 1fr); }
-  .wire { display: none; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
   .plans { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
   .links a:not(.btn) { display: none; }
-  .steps, .stats { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: 1fr; }
   .screen { height: 470px; padding: 14px; font-size: 11.5px; }
   .bar { width: 90px; }
   .stamp { font-size: 20px; }
