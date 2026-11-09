@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Revertgate">
+  <!-- A revert arrow turning back around a check: the change is undone, and the tests must notice. -->
+  <rect width="32" height="32" rx="9" fill="#c8ff3a"/>
+  <g fill="none" stroke="#05071a" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9.64 9.64A9 9 0 1 1 7.31 18.33"/>
+    <polyline points="12.3 10.2 8.4 11 8.9 7"/>
+    <polyline points="11.9 16.3 14.8 19.2 20.3 13.1"/>
+  </g>
+</svg>
