@@ -11,6 +11,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="sections.css">
+<script>document.documentElement.classList.add("js");</script>
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 </head>
 <body>
@@ -28,7 +30,12 @@
 
 <main id="top">
   <header class="hero">
+    <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
     <div class="code-rain" aria-hidden="true"></div>
+    <div class="mega-wrap">
+      <button class="mega" id="mega" aria-label="Revertgate. Press to replay the revert." data-word="REVERTGATE"></button>
+      <p class="mega-sub" id="megaSub"><span class="dim">$</span> revertgate check <span class="dim">--base main</span> <span class="ok" id="megaOk">✓ proven</span></p>
+    </div>
     <div class="wrap hero-grid">
       <div>
         <span class="eyebrow"><span class="dot"></span>A GitHub check for AI-written pull requests</span>
@@ -91,6 +98,8 @@
     </div>
   </section>
 
+  <div class="band" aria-hidden="true"><div class="band-track">PROVE IT ✦ REVERT IT ✦ BLOCK IT ✦ PROVE IT ✦ REVERT IT ✦ BLOCK IT ✦ PROVE IT ✦ REVERT IT ✦</div></div>
+
   <section id="how">
     <div class="wrap">
       <div class="reveal">
@@ -98,16 +107,33 @@
         <h2>An AI reviewer gives you an opinion.<br><em>Revertgate runs your tests.</em></h2>
         <p class="lead">Coding agents are great at making CI green, and sometimes they do it by changing the tests instead of the code. Revertgate checks the evidence itself.</p>
       </div>
-      <div class="steps" id="steps">
-        <svg class="wire" viewBox="0 0 1200 4" preserveAspectRatio="none" aria-hidden="true">
-          <defs><linearGradient id="wireGrad"><stop offset="0" stop-color="#c8ff3a"/><stop offset=".5" stop-color="#4fe3ff"/><stop offset="1" stop-color="#8b6cff"/></linearGradient></defs>
-          <path d="M60 2 H1140"/>
-        </svg>
-        <div class="card reveal"><div class="num">01</div><h4>Revert the code</h4><p>Put the PR's code back to the base branch, keep the PR's tests, and run them. They have to fail. If they still pass, they never touched the change.</p></div>
-        <div class="card reveal"><div class="num">02</div><h4>File by file</h4><p>When a PR touches several files, revert each one alone and name any file no test notices.</p></div>
-        <div class="card reveal"><div class="num">03</div><h4>Read the diff</h4><p>New skips and <code>.only</code>s, deleted tests, lost assertions, exact matchers swapped for <code>toBeTruthy()</code>, suppressions, swallowed errors.</p></div>
-        <div class="card reveal"><div class="num">04</div><h4>Guard the gate</h4><p><code>continue-on-error</code>, <code>--passWithNoTests</code>, removed test steps. Its own config is read from the base branch, so a PR can't relax it.</p></div>
+    </div>
+    <div class="story" id="story">
+      <div class="story-pin">
+        <div class="wrap story-grid">
+          <ol class="story-steps" id="storySteps">
+            <li class="on"><span class="sn">01</span><div><b>The agent opens a PR</b><p>CI is green. Twelve tests pass. It looks done.</p></div></li>
+            <li><span class="sn">02</span><div><b>Revertgate reverts the code</b><p>The PR's code goes back to <code>main</code>. The PR's tests stay.</p></div></li>
+            <li><span class="sn">03</span><div><b>The tests run again</b><p>They have to fail now. If they still pass, they never touched the change.</p></div></li>
+            <li><span class="sn">04</span><div><b>The verdict</b><p>Blocked, with the reason on the PR and the line in the diff.</p></div></li>
+          </ol>
+          <div class="panel stage" id="stage" data-stage="0" aria-live="polite">
+            <div class="panel-head"><span>PR #142 · Add tax · invoice.py</span><span class="ci" id="ci"></span></div>
+            <div class="stage-diff">
+              <div class="sl ctx">def total(items):</div>
+              <div class="sl flipline"><span class="now">+     return round(sum(p * q for p, q in items) * 1.2)</span><span class="then">↺     return sum(p * q for p, q in items)</span></div>
+              <div class="sl ctx">&nbsp;</div>
+              <div class="sl ctx">tests/test_invoice.py</div>
+              <div class="sl flipline t"><span class="now">+ @pytest.mark.skip(reason="flaky")</span><span class="then">+ @pytest.mark.skip(reason="flaky")   <em>kept</em></span></div>
+            </div>
+            <div class="stage-tests" id="stageTests"></div>
+            <div class="stamp bad stage-stamp">BLOCKED<small>unproven-change · skip-added</small></div>
+          </div>
+        </div>
+        <div class="story-progress" aria-hidden="true"><i id="storyBar"></i></div>
       </div>
+    </div>
+    <div class="wrap">
       <div class="stats reveal">
         <div class="stat"><div class="big" data-count="64" data-suffix="%">0%</div><p>of open-source maintainers say AI-assisted submissions made reviews take longer (Linux Foundation survey)</p></div>
         <div class="stat"><div class="big" data-count="0">0</div><p>LLM calls. Deterministic: the same PR always gets the same verdict</p></div>
@@ -115,6 +141,57 @@
         <div class="stat"><div class="big" data-count="14">0</div><p>rules, each one a shortcut agents actually take, each one switchable</p></div>
       </div>
     </div>
+  </section>
+
+  <section id="rules">
+    <div class="wrap">
+      <div class="reveal">
+        <div class="kicker">// the rules</div>
+        <h2>Every shortcut <em>has a rule.</em></h2>
+        <p class="lead">Fourteen checks, each one a trick coding agents really use to turn CI green. Set any of them to <code>block</code>, <code>warn</code> or <code>off</code>.</p>
+      </div>
+      <div class="bento">
+        <article class="tile big reveal">
+          <div class="mini unproven"><div class="u-code"><span class="a">return subtotal * 1.2</span><span class="b">return subtotal</span></div><div class="u-pill"><span class="p1">12 passed</span><span class="p2">12 passed · reverted</span></div><div class="u-x">✗ unproven-change</div></div>
+          <h4><code>unproven-change</code></h4><p>The flagship. Revert the code, rerun the tests: if nothing fails, the tests never touched the change.</p>
+        </article>
+        <article class="tile reveal">
+          <div class="mini"><span class="dim">it.</span><span class="hl">skip</span><span class="dim">('refunds', () =&gt; …)</span></div>
+          <h4><code>skip-added</code></h4><p>New skips, <code>xit</code>, <code>#[ignore]</code>, <code>t.Skip</code>, <code>@Disabled</code>.</p>
+        </article>
+        <article class="tile reveal">
+          <div class="mini"><span class="dim">expect(total).</span><span id="morph" class="morph">toBe(36)</span></div>
+          <h4><code>matcher-loosened</code></h4><p>An exact expectation swapped for "it's truthy".</p>
+        </article>
+        <article class="tile reveal">
+          <div class="mini swallow"><span class="dim">try { charge() } catch (e) {</span><span class="err">Error</span><span class="dim">}</span></div>
+          <h4><code>error-swallowed</code></h4><p>Empty catches, <code>except: pass</code>, discarded Go errors.</p>
+        </article>
+        <article class="tile reveal">
+          <div class="mini gate"><span class="dim">continue-on-error:</span><span class="sw" aria-hidden="true"><i></i></span><span class="lock">🔒</span></div>
+          <h4><code>gate-tampered</code></h4><p>CI quietly told not to fail: <code>|| true</code>, <code>--passWithNoTests</code>.</p> <!-- slop-ok: page copy naming a pattern Revertgate detects; not code -->
+        </article>
+        <article class="tile reveal">
+          <div class="mini removed"><span class="row">✓ test_refund</span><span class="row gone">✓ test_tax_rounding</span><span class="row">✓ test_empty</span><span class="count">31 → 30 tests</span></div>
+          <h4><code>tests-removed</code></h4><p>A net loss of tests, or of assertions, across the PR.</p>
+        </article>
+        <article class="tile wide reveal">
+          <h4>And eight more</h4>
+          <div class="rule-chips"><span>focus-added</span><span>assertions-removed</span><span>tests-failing</span><span>untested-file</span><span>no-tests</span><span>suppression-added</span><span>test-command-changed</span><span>revertgate-config-changed</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="wall">
+    <div class="wrap">
+      <div class="reveal">
+        <div class="kicker">// verdicts</div>
+        <h2>Every PR gets <em>a verdict.</em></h2>
+        <p class="lead">Examples of what Revertgate reports, in every stack it checks. Hover to pause.</p>
+      </div>
+    </div>
+    <div class="wall" id="wallCols" aria-label="Example Revertgate verdicts"></div>
   </section>
 
   <section id="install">
@@ -137,6 +214,8 @@
       </div>
     </div>
   </section>
+
+  <div class="band alt" aria-hidden="true"><div class="band-track">NO LLM ✦ NO OPINIONS ✦ JUST EVIDENCE ✦ NO LLM ✦ NO OPINIONS ✦ JUST EVIDENCE ✦ NO LLM ✦</div></div>
 
   <section id="pricing">
     <div class="wrap">
@@ -188,7 +267,7 @@
 
 <div class="wrap">
   <footer>
-    <span class="giant" aria-hidden="true">REVERTGATE</span>
+    <span class="giant" id="giant" aria-hidden="true">REVERTGATE</span>
     <div class="foot">
       <span>© 2026 Revertgate · <a href="https://github.com/Revertgate/revertgate">GitHub</a> · <a href="https://github.com/marketplace/actions/revertgate">Marketplace</a> · <a href="https://github.com/Revertgate/demo/pulls">Demo PRs</a></span>
       <span>Not affiliated with GitHub, Anthropic or OpenAI.</span>
@@ -201,5 +280,6 @@
   const CHECKOUT = { pro: "https://buy.polar.sh/polar_cl_ep9wCVHqLRVREBx6BfEHTw0u9UWj2aNhekJ8Y4HoFiS", team: "https://buy.polar.sh/polar_cl_qAMYxqrRDSvKrK7DkI3Jvb8wLxG3wCI58ItnQ3eEcXK" };
 </script>
 <script src="app.js" defer></script>
+<script src="sections.js" defer></script>
 </body>
 </html>
