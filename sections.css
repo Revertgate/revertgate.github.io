@@ -88,6 +88,7 @@
 .rule-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .rule-chips span { padding: 6px 12px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--ink-2); color: var(--cyan); font: 13px var(--mono); transition: transform 0.25s var(--ease), color 0.25s; }
 .rule-chips span:hover { transform: translateY(-3px); color: var(--lime); }
+.rule-chips span.lean { color: var(--violet); border-color: rgba(139, 108, 255, 0.45); }
 
 /* ---------- Verdict wall: three columns drifting at different speeds ---------- */
 .wall { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; width: min(1180px, 100% - 2 * var(--gutter)); height: 600px; margin: 36px auto 0; overflow: hidden; mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent); }
