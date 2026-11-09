@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revertgate · CI for AI pull requests</title>
+<meta name="description" content="Revertgate reverts an AI-written pull request's code and reruns your tests. If they still pass, the tests don't cover the change, and the PR is blocked.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root {
+  --bg: #0b0d10; --bg-2: #12161b; --card: #151a20; --line: #232a33;
+  --text: #e8edf2; --muted: #93a0ad; --accent: #3fd68f; --accent-ink: #062b18;
+  --bad: #ff6b6b; --warn: #f4c152; --code-bg: #0f1317;
+  --radius: 14px; --mono: "JetBrains Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f7f8fa; --bg-2: #eef1f4; --card: #ffffff; --line: #dde3e9;
+    --text: #0f1720; --muted: #5a6876; --accent: #0f9d5c; --accent-ink: #ffffff;
+    --bad: #d93838; --warn: #b07800; --code-bg: #f2f4f7;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f7f8fa; --bg-2: #eef1f4; --card: #ffffff; --line: #dde3e9;
+  --text: #0f1720; --muted: #5a6876; --accent: #0f9d5c; --accent-ink: #ffffff;
+  --bad: #d93838; --warn: #b07800; --code-bg: #f2f4f7;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 Inter, system-ui, sans-serif; }
+a { color: inherit; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
+.logo { display: flex; gap: 10px; align-items: center; font-weight: 800; font-size: 20px; text-decoration: none; }
+.logo i { width: 26px; height: 26px; border-radius: 8px; background: var(--accent); display: grid; place-items: center; color: var(--accent-ink); font-style: normal; font-size: 15px; }
+nav .links { display: flex; gap: 22px; align-items: center; font-size: 15px; color: var(--muted); }
+nav .links a { text-decoration: none; }
+nav .links a:hover { color: var(--text); }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 10px; font-weight: 600; text-decoration: none; border: 1px solid var(--line); background: var(--card); cursor: pointer; font-size: 15px; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.btn:hover { filter: brightness(1.07); }
+header.hero { text-align: center; padding: 64px 0 40px; }
+.eyebrow { display: inline-block; font-size: 13px; color: var(--accent); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; margin-bottom: 20px; }
+h1 { font-size: clamp(36px, 6vw, 62px); line-height: 1.05; letter-spacing: -0.03em; margin: 0 auto 18px; max-width: 840px; }
+.sub { font-size: clamp(17px, 2.2vw, 20px); color: var(--muted); max-width: 680px; margin: 0 auto 28px; }
+.ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.note { font-size: 13px; color: var(--muted); margin-top: 14px; }
+.shot { margin: 48px auto 0; max-width: 820px; text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 30px 80px -30px rgba(0,0,0,.6); overflow: hidden; }
+.shot .bar { display: flex; gap: 10px; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.shot .bar b { color: var(--bad); }
+.shot .body { padding: 20px 24px 24px; }
+.shot h3 { margin: 0 0 12px; font-size: 20px; }
+.shot ul { padding-left: 18px; margin: 8px 0; }
+.shot li { margin: 6px 0; }
+.tag { font: 600 12px var(--mono); padding: 2px 7px; border-radius: 6px; background: var(--bg-2); }
+.tag.block { color: var(--bad); } .tag.warn { color: var(--warn); }
+code, .mono { font-family: var(--mono); font-size: .92em; }
+.shot .meta { font-size: 12px; color: var(--muted); margin-top: 14px; }
+section { padding: 72px 0; border-top: 1px solid var(--line); }
+h2 { font-size: clamp(28px, 4vw, 40px); letter-spacing: -0.02em; margin: 0 0 12px; }
+.lead { color: var(--muted); max-width: 680px; margin: 0 0 36px; font-size: 18px; }
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
+.card h4 { margin: 0 0 8px; font-size: 17px; }
+.card p { margin: 0; color: var(--muted); font-size: 15px; }
+.step { font: 600 13px var(--mono); color: var(--accent); margin-bottom: 8px; }
+.vs { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.vs .card.ours { border-color: var(--accent); }
+pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; overflow-x: auto; font: 14px/1.55 var(--mono); margin: 0; }
+.pricing { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); align-items: stretch; }
+.plan { display: flex; flex-direction: column; }
+.plan.featured { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.plan .name { font-weight: 700; font-size: 18px; }
+.plan .price { font: 600 44px/1 var(--mono); margin: 14px 0 4px; }
+.plan .price small { font: 400 14px Inter, sans-serif; color: var(--muted); }
+.plan ul { list-style: none; padding: 0; margin: 18px 0 24px; flex: 1; }
+.plan li { padding: 6px 0 6px 26px; position: relative; font-size: 15px; }
+.plan li::before { content: "✓"; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+.plan .btn { justify-content: center; }
+.pill { font-size: 12px; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 1px 8px; margin-left: 8px; vertical-align: middle; }
+details { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; margin-bottom: 10px; }
+summary { font-weight: 600; cursor: pointer; }
+details p { color: var(--muted); margin: 10px 0 0; }
+footer { padding: 36px 0 60px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+@media (max-width: 640px) {
+  nav .links a:not(.btn) { display: none; }
+  header.hero { padding-top: 36px; }
+  .shot .body { padding: 16px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="logo" href="#"><i>✓</i>Revertgate</a>
+    <div class="links">
+      <a href="#how">How it works</a>
+      <a href="#catches">What it catches</a>
+      <a href="#pricing">Pricing</a>
+      <a class="btn primary" href="#install">Install</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <span class="eyebrow">A GitHub check for AI-written pull requests</span>
+    <h1>Merge AI pull requests with proof, not hope.</h1>
+    <p class="sub">Revertgate reverts the PR's code and reruns your tests. If they still pass, the tests don't cover the change, and the PR is blocked. It also catches skipped, deleted and weakened tests, and CI that's been switched off.</p>
+    <div class="ctas">
+      <a class="btn primary" href="#install">Add to a repo: free for public repos</a>
+      <a class="btn" href="#pricing">See pricing</a>
+    </div>
+    <p class="note">Runs inside your own CI runner. Your code never leaves it.</p>
+
+    <div class="shot" role="img" aria-label="A Revertgate report blocking a pull request">
+      <div class="bar"><b>●</b> Revertgate: failing · Add tax · #142</div>
+      <div class="body">
+        <h3>❌ Revertgate: 2 problems block this PR</h3>
+        <p><b>Revert check:</b> reverted <code>invoice.py</code> and ran the tests again. <b>They still passed</b>, so they don't exercise this change.</p>
+        <ul>
+          <li><span class="tag block">unproven-change</span> the tests still pass with the code change reverted</li>
+          <li><code>tests/test_invoice.py:7</code> <span class="tag block">skip-added</span> added a pytest skip marker</li>
+          <li><code>tests/test_invoice.py:5</code> <span class="tag warn">matcher-loosened</span> the same assertion minus its expected value</li>
+          <li><code>invoice.py:4</code> <span class="tag warn">error-swallowed</span> added an <code>except: pass</code></li>
+        </ul>
+        <div class="meta">Real output from Revertgate's end-to-end test: an agent asked to "add tax" broke the totals, then "fixed" the tests.</div>
+      </div>
+    </div>
+  </header>
+</div>
+
+<section id="how">
+  <div class="wrap">
+    <h2>An AI reviewer gives you an opinion. Revertgate runs your tests.</h2>
+    <p class="lead">Coding agents are good at making CI green, and sometimes they do it by changing the tests rather than the code. Revertgate checks the evidence itself. No LLM is involved, so the same PR always gets the same verdict.</p>
+    <div class="grid">
+      <div class="card"><div class="step">01 · REVERT</div><h4>Do the tests catch the change?</h4><p>Revertgate puts the PR's code back to the base version, keeps the PR's tests, and runs them. They have to fail. If they still pass, they never touched the change.</p></div>
+      <div class="card"><div class="step">02 · PER FILE</div><h4>Which files are untested?</h4><p>When a PR touches several files, Revertgate reverts each one alone and names any file no test notices.</p></div>
+      <div class="card"><div class="step">03 · DIFF</div><h4>Was anything weakened?</h4><p>New skips and <code>.only</code>s, deleted tests, net loss of assertions, exact matchers swapped for <code>toBeTruthy()</code>, suppressions, swallowed errors.</p></div>
+      <div class="card"><div class="step">04 · GATE</div><h4>Was the gate switched off?</h4><p><code>continue-on-error</code>, <code>--passWithNoTests</code>, removed test steps, a changed test script. Revertgate reads its own config from the base branch, so a PR can't relax it.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="catches">
+  <div class="wrap">
+    <h2>Why now</h2>
+    <p class="lead">In a Linux Foundation survey, 64% of open-source maintainers said AI-assisted submissions have made their reviews take longer. Revertgate turns "did the agent actually test this?" into a check you can require before a merge.</p>
+    <div class="vs">
+      <div class="card"><h4>Without Revertgate</h4><p>Green CI on an agent's PR tells you the tests passed. It doesn't tell you they test anything, or that the agent didn't edit them to pass.</p></div>
+      <div class="card ours"><h4>With Revertgate</h4><p>Every PR states what was proven: "reverted <code>billing.ts</code>, 3 tests failed". Reviewers read the diff knowing the tests mean something.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="wrap">
+    <h2>Install in two minutes</h2>
+    <p class="lead">Run <code>revertgate init</code> in your repo, or add this workflow. It works with any test command: pytest, Jest, Vitest, cargo, go test, PHPUnit, RSpec.</p>
+    <pre>name: Revertgate
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  revertgate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - run: npm ci            # whatever your tests need
+      - uses: revertgate/revertgate@v0
+        with:
+          license-key: ${{ secrets.REVERTGATE_LICENSE_KEY }}  # private repos only</pre>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <h2>Pricing</h2>
+    <p class="lead">Free for open source, forever. Private repositories pay monthly, and every plan gets each new detector as agents learn new tricks.</p>
+    <div class="pricing">
+      <div class="card plan">
+        <div class="name">Open source</div>
+        <div class="price">$0<small> forever</small></div>
+        <ul>
+          <li>Unlimited public repositories</li>
+          <li>Revert check and per-file check</li>
+          <li>All detectors, PR comments, annotations</li>
+          <li>Local CLI</li>
+        </ul>
+        <a class="btn" href="#install">Install</a>
+      </div>
+      <div class="card plan featured">
+        <div class="name">Pro<span class="pill">most teams</span></div>
+        <div class="price">$19<small> / private repo / month</small></div>
+        <ul>
+          <li>Everything in Open source</li>
+          <li>Private repositories</li>
+          <li>Configurable rules and severities</li>
+          <li>Email support</li>
+        </ul>
+        <a class="btn primary" data-plan="pro" href="#install">Start Pro</a>
+      </div>
+      <div class="card plan">
+        <div class="name">Team</div>
+        <div class="price">$99<small> / month</small></div>
+        <ul>
+          <li>Up to 10 private repositories</li>
+          <li>Everything in Pro</li>
+          <li>Priority support and rule requests</li>
+          <li>Cancel any time</li>
+        </ul>
+        <a class="btn" data-plan="team" href="#install">Start Team</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>Questions</h2>
+    <details><summary>Does my code leave my CI?</summary><p>No. Revertgate is a single binary that runs in your own GitHub Actions runner. For private repos it sends one request with your licence key to check it's valid, and nothing else.</p></details>
+    <details><summary>What if a finding is wrong?</summary><p>A maintainer adds the <code>revertgate-override</code> label. Revertgate still reports the findings but lets the PR merge, so the override is visible in the PR history. Rules can also be set to <code>warn</code> or <code>off</code> in <code>.revertgate.toml</code>.</p></details>
+    <details><summary>Does it only work on AI-written PRs?</summary><p>It works on any PR. It's built for the ways agents game tests, but a human who deletes a failing test gets the same answer.</p></details>
+    <details><summary>Doesn't the revert check slow CI down?</summary><p>It runs your suite twice (once on the PR, once reverted), plus once per file for PRs that touch up to 8 code files. The per-file limit is configurable.</p></details>
+    <details><summary>What are its limits?</summary><p>A flaky suite can fake either answer, a build error with the change reverted counts as "caught", and tests that live inside a source file are reverted along with it. Revertgate says which check ran, so you can judge it.</p></details>
+  </div>
+</section>
+
+<div class="wrap">
+  <footer>
+    <span>© 2026 Revertgate</span>
+    <span>Not affiliated with GitHub, Anthropic or OpenAI.</span>
+  </footer>
+</div>
+<script>
+  // Checkout links, filled in once the store products exist. Until then the buttons
+  // lead to the install section rather than a dead link.
+  const CHECKOUT = { pro: "https://buy.polar.sh/polar_cl_ep9wCVHqLRVREBx6BfEHTw0u9UWj2aNhekJ8Y4HoFiS", team: "https://buy.polar.sh/polar_cl_qAMYxqrRDSvKrK7DkI3Jvb8wLxG3wCI58ItnQ3eEcXK" };
+  document.querySelectorAll("[data-plan]").forEach((a) => {
+    const url = CHECKOUT[a.dataset.plan];
+    if (url) a.href = url;
+  });
+</script>
+</body>
+</html>
