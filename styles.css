@@ -26,7 +26,7 @@
 html { scroll-behavior: smooth; }
 body {
   margin: 0;
-  font-variant-ligatures: no-contextual;
+  font-variant-ligatures: none;
   background: var(--ink);
   color: var(--text);
   font: 400 17px/1.6 var(--display);
@@ -156,6 +156,82 @@ h1 .swap span { display: inline-block; animation: drop 0.6s var(--ease) both; }
 .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin: 28px 0 14px; }
 .note { color: var(--dim); font: 13px var(--mono); }
 
+/* ---------- Opening wordmark ---------- */
+/* The page opens on REVERTGATE spelled backwards; each letter flips into place (a revert)
+   and fills with the brand gradient. It follows the pointer and replays on click. */
+.aurora { position: absolute; inset: -120px 0 auto; height: 900px; overflow: hidden; pointer-events: none; z-index: -1; mask-image: linear-gradient(#000 40%, transparent); }
+.aurora i { position: absolute; width: 46vw; height: 46vw; max-width: 640px; max-height: 640px; border-radius: 50%; filter: blur(110px); opacity: 0.22; animation: drift 18s ease-in-out infinite alternate; }
+.aurora i:nth-child(1) { left: 2%; top: 0; background: var(--violet); }
+.aurora i:nth-child(2) { right: 4%; top: 60px; background: var(--cyan); opacity: 0.13; animation-delay: -6s; }
+.aurora i:nth-child(3) { left: 38%; top: 180px; background: var(--lime); opacity: 0.08; animation-delay: -12s; }
+@keyframes drift { to { transform: translate(8vw, 70px) scale(1.15); } }
+
+.mega-wrap { display: grid; justify-items: center; padding: 0 var(--gutter); }
+.mega {
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 800 clamp(52px, 15.5vw, 236px)/0.86 var(--display);
+  letter-spacing: -0.055em;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  perspective: 900px;
+}
+.mega .ch {
+  display: inline-block;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--line-strong);
+  background: linear-gradient(90deg, var(--c1), var(--c2)) 0 0 / 0% 100% no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  transition: background-size 0.7s var(--ease), translate 0.35s var(--ease), -webkit-text-stroke-color 0.4s;
+  transform-origin: 50% 60%;
+}
+.mega .ch.on { background-size: 100% 100%; -webkit-text-stroke-color: transparent; }
+.mega .ch.flip { animation: flipx 0.34s var(--ease); }
+@keyframes flipx { 50% { transform: rotateX(90deg); } }
+.mega:focus-visible { outline: 2px solid var(--cyan); outline-offset: 8px; border-radius: 12px; }
+.mega-sub { margin: 14px 0 0; font: 500 clamp(12px, 1.4vw, 15px) var(--mono); color: var(--muted); opacity: 0; transition: opacity 0.6s; }
+.mega-sub .ok { opacity: 0; transition: opacity 0.4s; }
+.opened .mega-sub, .opened .mega-sub .ok { opacity: 1; }
+.hero-grid { transition: opacity 0.9s var(--ease), transform 0.9s var(--ease); }
+.js body:not(.opened) .hero .hero-grid { opacity: 0; transform: translateY(30px); }
+.hero { padding-top: clamp(28px, 5vw, 64px); }
+.hero-grid { margin-top: clamp(36px, 5vw, 64px); }
+
+/* ---------- Scroll bands: giant outlined words that fill as you scroll past ---------- */
+.band { margin-top: clamp(72px, 10vw, 130px); overflow: hidden; border-block: 1px solid var(--line); padding: 18px 0; }
+.band-track {
+  display: inline-block;
+  white-space: nowrap;
+  font: 800 clamp(48px, 9vw, 140px)/1 var(--display);
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--line-strong);
+  background: linear-gradient(90deg, var(--lime), var(--cyan) 40%, var(--violet) 70%, var(--coral)) 0 0 / var(--fill, 0%) 100% no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  transform: translateX(var(--shift, 0px));
+  will-change: transform;
+}
+.band.alt .band-track { background-image: linear-gradient(90deg, var(--coral), var(--amber) 35%, var(--lime) 70%, var(--cyan)); }
+
+/* Headline accents fill in with the gradient when their section scrolls into view. */
+h2 em {
+  color: transparent;
+  -webkit-text-stroke: 1px var(--lime);
+  background: linear-gradient(90deg, var(--lime), var(--cyan)) 0 0 / 0% 100% no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  transition: background-size 1.3s 0.25s var(--ease), -webkit-text-stroke-color 1.3s 0.6s;
+}
+h2 em.c { -webkit-text-stroke-color: var(--coral); background-image: linear-gradient(90deg, var(--coral), var(--amber)); }
+.in h2 em, h2 em.in { background-size: 100% 100%; -webkit-text-stroke-color: transparent; }
+
 /* ---------- Terminal ---------- */
 .term {
   position: relative;
@@ -243,8 +319,7 @@ h1 .swap span { display: inline-block; animation: drop 0.6s var(--ease) both; }
 section { padding: clamp(72px, 10vw, 130px) 0 0; }
 .kicker { color: var(--cyan); font: 600 13px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; }
 h2 { margin: 12px 0 14px; font-size: clamp(34px, 4.6vw, 58px); line-height: 1; letter-spacing: -0.035em; font-weight: 800; }
-h2 em { font-style: normal; color: var(--lime); }
-h2 em.c { color: var(--coral); }
+h2 em { font-style: normal; }
 .lead { max-width: 40em; color: var(--muted); font-size: 18px; }
 .reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease); }
 .reveal.in { opacity: 1; transform: none; }
@@ -371,7 +446,7 @@ footer { margin-top: 120px; padding: 40px 0 30px; border-top: 1px solid var(--li
   transition: background-size 1.2s var(--ease);
   user-select: none;
 }
-.giant:hover { background-size: 100% 100%; }
+.giant:hover, .giant.in { background-size: 100% 100%; }
 .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 24px; color: var(--dim); font: 13px var(--mono); }
 .foot a { color: var(--muted); }
 
@@ -397,12 +472,15 @@ footer { margin-top: 120px; padding: 40px 0 30px; border-top: 1px solid var(--li
 /* Reduced motion keeps typing, fades and colour, and drops sweeping movement: the drifting
    code, the marquee, tilts, shakes and the stamp's zoom. */
 @media (prefers-reduced-motion: reduce) {
+  /* .motion (set by ?motion) opts back in, for previewing. */
   html { scroll-behavior: auto; }
-  .code-rain pre, .marquee-track, .logo .spin, .logo .tick { animation: none; }
-  .reveal { transform: none; }
-  .stamp { animation-name: fade; }
-  h1 .swap span, .screen .ln, .diff .d, .finding { animation-name: fade; }
-  .btn:hover, .chip:hover, .card:hover { transform: none; }
-  .term { transform: none; }
+  html:not(.motion) .code-rain pre, html:not(.motion) .marquee-track, html:not(.motion) .logo .spin, html:not(.motion) .logo .tick, html:not(.motion) .aurora i, html:not(.motion) .mega .ch.flip { animation: none; }
+  html:not(.motion) .band-track { transform: none; }
+  html.js:not(.motion) body:not(.opened) .hero .hero-grid { transform: none; }
+  html:not(.motion) .reveal { transform: none; }
+  html:not(.motion) .stamp { animation-name: fade; }
+  html:not(.motion) h1 .swap span, html:not(.motion) .screen .ln, html:not(.motion) .diff .d, html:not(.motion) .finding { animation-name: fade; }
+  html:not(.motion) .btn:hover, html:not(.motion) .chip:hover, html:not(.motion) .card:hover { transform: none; }
+  html:not(.motion) .term { transform: none; }
 }
 @keyframes fade { from { opacity: 0; } }

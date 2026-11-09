@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<script>document.documentElement.classList.add("js");</script>
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 </head>
 <body>
@@ -28,7 +29,12 @@
 
 <main id="top">
   <header class="hero">
+    <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
     <div class="code-rain" aria-hidden="true"></div>
+    <div class="mega-wrap">
+      <button class="mega" id="mega" aria-label="Revertgate. Press to replay the revert." data-word="REVERTGATE"></button>
+      <p class="mega-sub" id="megaSub"><span class="dim">$</span> revertgate check <span class="dim">--base main</span> <span class="ok" id="megaOk">✓ proven</span></p>
+    </div>
     <div class="wrap hero-grid">
       <div>
         <span class="eyebrow"><span class="dot"></span>A GitHub check for AI-written pull requests</span>
@@ -91,6 +97,8 @@
     </div>
   </section>
 
+  <div class="band" aria-hidden="true"><div class="band-track">PROVE IT ✦ REVERT IT ✦ BLOCK IT ✦ PROVE IT ✦ REVERT IT ✦ BLOCK IT ✦ PROVE IT ✦ REVERT IT ✦</div></div>
+
   <section id="how">
     <div class="wrap">
       <div class="reveal">
@@ -137,6 +145,8 @@
       </div>
     </div>
   </section>
+
+  <div class="band alt" aria-hidden="true"><div class="band-track">NO LLM ✦ NO OPINIONS ✦ JUST EVIDENCE ✦ NO LLM ✦ NO OPINIONS ✦ JUST EVIDENCE ✦ NO LLM ✦</div></div>
 
   <section id="pricing">
     <div class="wrap">
@@ -188,7 +198,7 @@
 
 <div class="wrap">
   <footer>
-    <span class="giant" aria-hidden="true">REVERTGATE</span>
+    <span class="giant" id="giant" aria-hidden="true">REVERTGATE</span>
     <div class="foot">
       <span>© 2026 Revertgate · <a href="https://github.com/Revertgate/revertgate">GitHub</a> · <a href="https://github.com/marketplace/actions/revertgate">Marketplace</a> · <a href="https://github.com/Revertgate/demo/pulls">Demo PRs</a></span>
       <span>Not affiliated with GitHub, Anthropic or OpenAI.</span>

@@ -2,7 +2,9 @@
 // Every string rendered as HTML below is written here, never taken from the visitor.
 "use strict";
 
-const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+// ?motion in the URL plays every animation even when the system asks for reduced motion.
+const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches && !new URLSearchParams(location.search).has("motion");
+if (!calm) document.documentElement.classList.add("motion");
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -361,9 +363,117 @@ function initSpotlights() {
   $$(".plan").forEach((p) => p.addEventListener("pointerleave", () => (p.style.transform = "")));
 }
 
+/* ---------------- Opening wordmark ---------------- */
+// REVERTGATE starts spelled backwards; each letter flips into place (the revert) and
+// fills with a slice of the brand gradient, so the word reads as one continuous sweep.
+const STOPS = [[200, 255, 58], [79, 227, 255], [139, 108, 255], [255, 79, 110]];
+function gradientAt(t) {
+  const x = Math.min(0.999, Math.max(0, t)) * (STOPS.length - 1);
+  const i = Math.floor(x);
+  const f = x - i;
+  const [a, b] = [STOPS[i], STOPS[i + 1]];
+  return `rgb(${a.map((v, k) => Math.round(v + (b[k] - v) * f)).join(",")})`;
+}
+function setLetter(el, ch, fill) {
+  el.textContent = ch;
+  el.classList.toggle("on", fill);
+}
+async function revertWord(letters, word, { fill }) {
+  const n = word.length;
+  for (let i = 0; i < n; i++) {
+    const el = letters[i];
+    const target = fill ? word[i] : word[n - 1 - i];
+    if (!calm) {
+      el.classList.remove("flip");
+      void el.offsetWidth;
+      el.classList.add("flip");
+    }
+    setTimeout(() => setLetter(el, target, fill), calm ? 0 : 160);
+    await sleep(calm ? 40 : 85);
+  }
+}
+async function initMega() {
+  const mega = $("#mega");
+  if (!mega) return;
+  const word = mega.dataset.word;
+  const n = word.length;
+  const letters = [...word].map((_, i) => {
+    const s = document.createElement("span");
+    s.className = "ch";
+    s.style.setProperty("--c1", gradientAt(i / n));
+    s.style.setProperty("--c2", gradientAt((i + 1) / n));
+    s.textContent = word[n - 1 - i];
+    mega.append(s);
+    return s;
+  });
+  let busy = false;
+  const replay = async () => {
+    if (busy) return;
+    busy = true;
+    $("#megaOk").style.opacity = "0";
+    await revertWord(letters, word, { fill: false });
+    await sleep(350);
+    await revertWord(letters, word, { fill: true });
+    await sleep(500);
+    $("#megaOk").style.opacity = "";
+    busy = false;
+  };
+  await sleep(250);
+  await revertWord(letters, word, { fill: true });
+  await sleep(450);
+  document.body.classList.add("opened");
+  mega.addEventListener("click", replay);
+  if (calm) return;
+  setInterval(() => { if (!document.hidden && mega.getBoundingClientRect().bottom > 0) replay(); }, 11000);
+  // Letters lean up toward the pointer, like a wave following the mouse.
+  if (window.matchMedia("(pointer: fine)").matches) {
+    const hero = $(".hero");
+    hero.addEventListener("pointermove", (e) => {
+      letters.forEach((el) => {
+        const r = el.getBoundingClientRect();
+        const dx = e.clientX - (r.left + r.width / 2);
+        const near = Math.exp(-(dx * dx) / (2 * 110 * 110));
+        const rise = Math.max(0, 1 - Math.abs(e.clientY - (r.top + r.height / 2)) / 520);
+        el.style.translate = `0 ${(-26 * near * rise).toFixed(1)}px`;
+      });
+    });
+    hero.addEventListener("pointerleave", () => letters.forEach((el) => (el.style.translate = "")));
+  }
+}
+
+/* ---------------- Scroll bands and footer wordmark ---------------- */
+// Each band's outlined words fill with gradient, and slide sideways, as it crosses the screen.
+function initBands() {
+  const bands = $$(".band");
+  const update = () => {
+    const vh = window.innerHeight;
+    bands.forEach((band, i) => {
+      const r = band.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, (vh - r.top) / (vh + r.height)));
+      const track = $(".band-track", band);
+      track.style.setProperty("--fill", `${Math.min(100, p * 140).toFixed(1)}%`);
+      if (!calm) track.style.setProperty("--shift", `${((i % 2 ? -1 : 1) * (p - 0.5) * 30).toFixed(2)}vw`);
+    });
+  };
+  let queued = false;
+  window.addEventListener("scroll", () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => { update(); queued = false; });
+  }, { passive: true });
+  window.addEventListener("resize", update);
+  update();
+  const giant = $("#giant");
+  if (giant) {
+    new IntersectionObserver((es) => es.forEach((e) => giant.classList.toggle("in", e.isIntersecting)), { threshold: 0.5 }).observe(giant);
+  }
+}
+
 buildRain();
 initTerminal();
 initPlayground();
 initInstall();
 initReveals();
 initSpotlights();
+initMega();
+initBands();
