@@ -1,5 +1,9 @@
 /* The scroll story, the rules bento and the verdict wall. Tokens come from styles.css. */
 
+/* ---------- Hero: "works with any agent or model" line above the marquee ---------- */
+.works-with { margin-top: 40px; margin-bottom: -24px; text-align: center; }
+.works-with b { color: var(--lime); font-weight: 600; }
+
 /* ---------- Scroll story: the page pins while scrolling plays one revert ---------- */
 .story { position: relative; height: 380vh; margin-top: 40px; }
 .story-pin { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; overflow: hidden; }
