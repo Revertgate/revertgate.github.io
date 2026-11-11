@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Revertgate · CI for AI pull requests</title>
-<meta name="description" content="Revertgate reverts an AI-written pull request's code and reruns your tests. If they still pass, the tests don't cover the change, and the PR is blocked.">
+<meta name="description" content="Agents like Claude Fable 5.2 write more code than anyone can review. Revertgate reverts an AI-written pull request's code and reruns your tests. If they still pass, the tests don't cover the change, and the PR is blocked. Works with any agent or model.">
 <meta property="og:title" content="Revertgate: merge AI pull requests with proof, not hope">
 <meta property="og:description" content="A GitHub check that reverts the PR's code and makes your tests prove they notice. Free for public repos.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,7 +40,7 @@
       <div>
         <span class="eyebrow"><span class="dot"></span>A GitHub check for AI-written pull requests</span>
         <h1>Your agent's PR is green.<br>Is it <span class="swap" id="swap">proven</span>?</h1>
-        <p class="sub">Revertgate reverts the PR's code and reruns your tests. If they <em>still pass</em>, the tests never touched the change, and the PR is blocked. It also catches skipped, deleted and weakened tests, and CI that's been switched off.</p>
+        <p class="sub">Agents like Claude Fable 5.2 write far more code, far faster, than anyone can review. Revertgate proves their tests actually test the change: it reverts the PR's code and reruns your tests. If they <em>still pass</em>, the tests never touched the change, and the PR is blocked. It also catches skipped, deleted and weakened tests, and CI that's been switched off.</p>
         <div class="ctas">
           <a class="btn primary" href="#install">Add it free to public repos <span class="arrow">→</span></a>
           <a class="btn" href="#play">Try to cheat it</a>
@@ -59,10 +59,11 @@
       </div>
     </div>
 
-    <div class="marquee" aria-label="Works on pull requests from any coding agent">
+    <p class="wrap note works-with"><b>Works with any agent or model.</b> The check is deterministic and looks only at the diff and what your tests do, so it doesn't matter who or what wrote the PR.</p>
+    <div class="marquee" aria-label="Works on pull requests from any coding agent or model">
       <div class="marquee-track">
-        <span>GitHub Copilot</span><span>Claude Code</span><span>Cursor</span><span>OpenAI Codex</span><span>Devin</span><span>Jules</span><span>Windsurf</span><span>Aider</span><span>and humans</span>
-        <span aria-hidden="true">GitHub Copilot</span><span aria-hidden="true">Claude Code</span><span aria-hidden="true">Cursor</span><span aria-hidden="true">OpenAI Codex</span><span aria-hidden="true">Devin</span><span aria-hidden="true">Jules</span><span aria-hidden="true">Windsurf</span><span aria-hidden="true">Aider</span><span aria-hidden="true">and humans</span>
+        <span>Claude Fable</span><span>Claude Opus</span><span>Claude Code</span><span>GitHub Copilot agent</span><span>Cursor</span><span>Devin</span><span>Jules</span><span>OpenAI Codex</span><span>GPT-based agents</span><span>Windsurf</span><span>Aider</span><span>local models</span><span>and humans</span>
+        <span aria-hidden="true">Claude Fable</span><span aria-hidden="true">Claude Opus</span><span aria-hidden="true">Claude Code</span><span aria-hidden="true">GitHub Copilot agent</span><span aria-hidden="true">Cursor</span><span aria-hidden="true">Devin</span><span aria-hidden="true">Jules</span><span aria-hidden="true">OpenAI Codex</span><span aria-hidden="true">GPT-based agents</span><span aria-hidden="true">Windsurf</span><span aria-hidden="true">Aider</span><span aria-hidden="true">local models</span><span aria-hidden="true">and humans</span>
       </div>
     </div>
   </header>
@@ -105,7 +106,7 @@
       <div class="reveal">
         <div class="kicker">// how it works</div>
         <h2>An AI reviewer gives you an opinion.<br><em>Revertgate runs your tests.</em></h2>
-        <p class="lead">Coding agents are great at making CI green, and sometimes they do it by changing the tests instead of the code. Revertgate checks the evidence itself.</p>
+        <p class="lead">Fable 5.2-class agents write far more code, far faster, than anyone can review line by line. Coding agents are great at making CI green, and sometimes they do it by changing the tests instead of the code. Revertgate checks the evidence itself, on every PR.</p>
       </div>
     </div>
     <div class="story" id="story">
@@ -277,7 +278,7 @@
 
 <script>
   // Checkout links, filled in by release/build.sh from release/brand.env.
-  const CHECKOUT = { pro: "https://buy.polar.sh/polar_cl_ep9wCVHqLRVREBx6BfEHTw0u9UWj2aNhekJ8Y4HoFiS", team: "https://buy.polar.sh/polar_cl_qAMYxqrRDSvKrK7DkI3Jvb8wLxG3wCI58ItnQ3eEcXK" };
+  const CHECKOUT = { pro: "", team: "" };
 </script>
 <script src="app.js" defer></script>
 <script src="sections.js" defer></script>
