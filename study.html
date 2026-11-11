@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>I read 484 AI agent pull requests · Revertgate</title>
+<meta name="description" content="A hand-checked study of 484 merged pull requests from the Copilot coding agent, Cursor, Devin and Jules: how often did they game the tests?">
+<meta property="og:title" content="I read 484 pull requests written by AI coding agents. Here's what they did to the tests.">
+<meta property="og:description" content="44% touched tests. Only 1–2 clearly weakened the test gate. The quieter patterns were more common.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<style>
+  .post { max-width: 720px; margin: 0 auto; padding: clamp(40px, 7vw, 90px) 0 80px; }
+  .post h1 { font-size: clamp(32px, 5vw, 54px); line-height: 1.05; margin: 14px 0 18px; }
+  .post h2 { font-size: clamp(22px, 3vw, 30px); margin: 52px 0 14px; letter-spacing: -0.02em; }
+  .post p, .post li { color: var(--muted); font-size: 18px; line-height: 1.65; }
+  .post strong { color: var(--text); }
+  .post code { font: 0.88em var(--mono); color: var(--lime); }
+  .post ul { padding-left: 1.2em; }
+  .byline { color: var(--dim); font: 13px var(--mono); }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 34px 0; }
+  .stat { background: var(--panel); border: 1px solid var(--line, rgba(255,255,255,.08)); border-radius: 18px; padding: 18px; }
+  .stat b { display: block; font-size: clamp(28px, 4vw, 40px); color: var(--lime); letter-spacing: -0.03em; }
+  .stat span { color: var(--muted); font-size: 14px; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 16px; }
+  th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,.08); color: var(--muted); }
+  th { color: var(--text); font-weight: 600; }
+  td:last-child, th:last-child { text-align: right; font-family: var(--mono); color: var(--text); }
+  .cta { margin-top: 56px; padding: 28px; border-radius: 22px; background: var(--panel); }
+  .cta p { margin-top: 0; }
+  @media (max-width: 560px) { .stats { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav aria-label="Main">
+    <a class="logo" href="./" aria-label="Revertgate home"><svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#c8ff3a"/><g fill="none" stroke="#05071a" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><g class="spin"><path d="M9.64 9.64A9 9 0 1 1 7.31 18.33"/><polyline points="12.3 10.2 8.4 11 8.9 7"/></g><polyline class="tick" points="11.9 16.3 14.8 19.2 20.3 13.1"/></g></svg><span>Revert<b>gate</b></span></a>
+    <div class="links">
+      <a href="./#how">How it works</a>
+      <a href="./#pricing">Pricing</a>
+      <a class="btn primary" href="./#install">Install <span class="arrow">→</span></a>
+    </div>
+  </nav>
+
+  <article class="post">
+    <p class="byline">STUDY · NOVEMBER 2026 · BY SALIORNETIZEN, MAKER OF REVERTGATE</p>
+    <h1>I read 484 pull requests written by AI coding agents. Here's what they did to the tests.</h1>
+
+    <div class="stats">
+      <div class="stat"><b>484</b><span>merged agent PRs scanned</span></div>
+      <div class="stat"><b>44%</b><span>touched test files</span></div>
+      <div class="stat"><b>1–2</b><span>clearly weakened the test gate</span></div>
+    </div>
+
+    <p>Coding agents now open pull requests at enormous scale: GitHub search lists about 1.5 million merged public PRs from the Copilot coding agent alone, plus hundreds of thousands from Devin, Jules and Cursor. A common worry is that an agent told to "make CI green" will make the <em>tests</em> green instead of the <em>code</em> right: skip the failing test, loosen the assertion, switch the CI step off.</p>
+    <p>I built a check for exactly that, so I pointed it at real agent PRs to see how often it actually happens.</p>
+
+    <h2>What I did</h2>
+    <ul>
+      <li>Sampled <strong>500 merged public PRs</strong> opened by four agents' GitHub Apps: 125 each from the Copilot coding agent, Cursor, Devin and Jules, 25 per day across five days, June–October 2026.</li>
+      <li>Downloaded each PR's diff (484 succeeded) and ran Revertgate's diff checks on it: new skips, deleted tests, lost assertions, loosened matchers, suppressions, swallowed errors and changes to the CI test gate.</li>
+      <li>Read <strong>every</strong> finding that would have blocked a merge, by hand.</li>
+    </ul>
+
+    <h2>What I found</h2>
+    <p><strong>211 of the 484 PRs (44%) touched test files.</strong> Cursor's PRs touched tests most often (77 of 121).</p>
+    <p><strong>Outright test-gaming was rare.</strong> On the first pass, my rules would have blocked 20 PRs (4%). Read by hand, they broke down like this:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>What the PR did</th><th>PRs</th></tr></thead>
+      <tbody>
+        <tr><td>Skipped a test only when the environment lacked something (Docker, Postgres, symlinks, <code>-short</code>)</td><td>11</td></tr>
+        <tr><td>Deleted tests along with the code they tested, in a refactor or feature removal</td><td>6</td></tr>
+        <tr><td>Made a test skip itself when its container start <strong>timed out</strong>, hiding a failure</td><td>1</td></tr>
+        <tr><td>Removed the test scripts and the CI test steps</td><td>1</td></tr>
+        <tr><td>A false alarm in my own rules, or harmless</td><td>2</td></tr>
+      </tbody>
+    </table></div>
+    <p>So: roughly <strong>1–2 PRs in 484</strong> clearly weakened the test gate. Half of what looked like cheating was good engineering.</p>
+    <p><strong>The quieter patterns were more common.</strong> Across the 484 PRs:</p>
+    <ul>
+      <li>27 added a lint or type-check suppression (<code>eslint-disable</code>, <code># noqa</code>, <code>@ts-ignore</code>…)</li>
+      <li>17 swallowed an error (<code>except: pass</code>, an empty <code>catch</code>)</li>
+      <li>4 loosened an exact assertion into a truthiness check</li>
+    </ul>
+    <p>None of those block a merge on their own, but they are exactly what a reviewer skimming an agent's 40-file PR misses.</p>
+
+    <h2>What I changed because of it</h2>
+    <p>My first rules were wrong about half the time on real code, which would have made Revertgate a check people switch off. So I fixed them before publishing this:</p>
+    <ul>
+      <li>Skips guarded by a condition (<code>skipif</code>, <code>skipUnless</code>, <code>#[ignore = "needs postgres"]</code>, a skip inside an <code>if</code>) now <strong>warn</strong> instead of blocking.</li>
+      <li>A pattern that mistook prettier's <code>--ignore-path</code> for pytest's <code>--ignore</code> was fixed.</li>
+    </ul>
+    <p>Rescanning the same 484 PRs: <strong>blocks fell from 20 to 11</strong>, and the one blocking skip left is the one that hides failures.</p>
+
+    <h2>What this study can't tell you</h2>
+    <ul>
+      <li><strong>The interesting failure is invisible in a diff.</strong> The worst agent PR isn't the one that skips a test; it's the one whose new tests pass whether or not the new code works. Catching that means reverting the PR's code and rerunning its tests, which is what Revertgate does in your CI, but I couldn't do it for 484 strangers' repositories.</li>
+      <li>Many agent PRs live in small personal repos; this is a sample of public agent PRs, not of production codebases.</li>
+      <li>The rules are text heuristics. I read every blocking finding by hand; warnings I counted without reading each one.</li>
+    </ul>
+
+    <div class="cta">
+      <p><strong>Try it.</strong> Revertgate is a GitHub Action: it reverts your PR's code, reruns your tests, and blocks the PR if they still pass, plus the checks above. Works with any agent or model. Free for public repos.</p>
+      <a class="btn primary" href="./#install">Install <span class="arrow">→</span></a>
+      <a class="btn" href="https://github.com/Revertgate/demo/pulls">See the demo PRs</a>
+    </div>
+  </article>
+</div>
+</body>
+</html>
