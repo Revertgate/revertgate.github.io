@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revertgate for regulated teams</title>
+<meta name="description" content="If your auditors ask how AI-written code changes are tested, Revertgate records, for every pull request, whether the tests would have failed without the change.">
+<meta property="og:title" content="Revertgate for regulated teams">
+<meta property="og:description" content="A per-PR record that the tests actually test the change. Tell us what your auditor asks for.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<style>
+  .post { max-width: 720px; margin: 0 auto; padding: clamp(40px, 7vw, 90px) 0 80px; }
+  .post h1 { font-size: clamp(32px, 5vw, 54px); line-height: 1.05; margin: 14px 0 18px; }
+  .post h2 { font-size: clamp(22px, 3vw, 30px); margin: 52px 0 14px; letter-spacing: -0.02em; }
+  .post p, .post li { color: var(--muted); font-size: 18px; line-height: 1.65; }
+  .post strong { color: var(--text); }
+  .post ul { padding-left: 1.2em; }
+  .byline { color: var(--dim); font: 13px var(--mono); }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 28px 0; }
+  .pair div { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 20px; }
+  .pair b { display: block; font: 600 13px var(--mono); letter-spacing: 0.04em; margin-bottom: 8px; }
+  .pair .now b { color: var(--dim); }
+  .pair .with b { color: var(--lime); }
+  .pair p { font-size: 16px; margin: 0; }
+  .cta { margin-top: 56px; padding: 28px; border-radius: 22px; background: var(--panel); border: 1px solid var(--line); }
+  .cta p { margin-top: 0; }
+  .small { font-size: 14px !important; color: var(--dim) !important; }
+  @media (max-width: 560px) { .pair { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav aria-label="Main">
+    <a class="logo" href="./" aria-label="Revertgate home"><svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#c8ff3a"/><g fill="none" stroke="#05071a" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><g class="spin"><path d="M9.64 9.64A9 9 0 1 1 7.31 18.33"/><polyline points="12.3 10.2 8.4 11 8.9 7"/></g><polyline class="tick" points="11.9 16.3 14.8 19.2 20.3 13.1"/></g></svg><span>Revert<b>gate</b></span></a>
+    <div class="links">
+      <a href="./#how">How it works</a>
+      <a href="study.html">Study</a>
+      <a class="btn primary" href="./#install">Install <span class="arrow">→</span></a>
+    </div>
+  </nav>
+
+  <main class="post">
+    <p class="byline">FOR BANKS, FINTECH, INSURERS AND OTHER AUDITED TEAMS</p>
+    <h1>Your auditor asks if AI-written changes are tested. What do you show them?</h1>
+    <p>Most change-management evidence is a pull request approval and a green CI run. With coding agents writing the change <em>and</em> its tests, a green run says less than it used to: the tests can pass whether or not the change works.</p>
+
+    <div class="pair">
+      <div class="now"><b>TODAY'S EVIDENCE</b><p>"The PR was approved and CI passed."</p></div>
+      <div class="with"><b>WITH REVERTGATE</b><p>"The tests were rerun with the change reverted, and they failed. They test this change."</p></div>
+    </div>
+
+    <h2>What Revertgate records on every pull request</h2>
+    <ul>
+      <li><strong>The revert check:</strong> the PR's code is reverted, your tests are rerun, and the result is recorded. Same PR, same verdict, every time: no LLM is involved.</li>
+      <li><strong>Test-gate changes:</strong> new skips, deleted tests, weakened assertions, and CI test steps that were switched off.</li>
+      <li><strong>Where it runs:</strong> in your own GitHub runner. Your code never leaves it.</li>
+    </ul>
+
+    <h2>What I'm exploring, and want your input on</h2>
+    <ul>
+      <li>An exportable evidence record per period: every PR, its verdict, and who approved it.</li>
+      <li>Signed results that an evidence platform or GRC tool can store.</li>
+      <li>A mapping from those records to the change-management controls you are audited against.</li>
+    </ul>
+    <p>None of that exists yet. If it would help you, I'd like to hear what your auditor actually asks for before I build it.</p>
+
+    <div class="cta">
+      <p><strong>Tell me what you need.</strong> Two lines is enough: your industry, and what evidence you're asked for today.</p>
+      <a class="btn primary" href="https://github.com/Revertgate/revertgate/issues/new?title=Regulated%20team%20enquiry&labels=regulated">Start a conversation <span class="arrow">→</span></a>
+      <a class="btn" href="./#install">Try it on a repo</a>
+      <p class="small" style="margin: 18px 0 0">That link opens a public GitHub issue, so leave out anything confidential. Revertgate is a testing check, not a compliance certification, and using it does not by itself satisfy any standard.</p>
+    </div>
+  </main>
+</div>
+</body>
+</html>
