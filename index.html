@@ -224,25 +224,25 @@
       <div class="reveal">
         <div class="kicker">// pricing</div>
         <h2>Free for open source. <em>Forever.</em></h2>
-        <p class="lead">Private repositories pay monthly, and every plan gets each new detector as agents learn new tricks.</p>
+        <p class="lead">Private repositories pay monthly, and every plan gets each new detector as agents learn new tricks. One key also unlocks modelsplit, the task board that runs agent work through Revertgate's checks.</p>
       </div>
       <div class="plans">
         <div class="card plan reveal">
           <div class="name">Open source</div>
           <div class="price">$0<small> forever</small></div>
-          <ul><li>Unlimited public repositories</li><li>Revert check and per-file check</li><li>All detectors, PR comments, annotations</li><li>Local CLI</li></ul>
+          <ul><li>Unlimited public repositories</li><li>Revert check and per-file check</li><li>All detectors, PR comments, annotations</li><li>Local CLI</li><li>modelsplit: demo, lean workers and single cards</li></ul>
           <a class="btn" href="#install">Install</a>
         </div>
         <div class="card plan featured reveal">
           <div class="name">Pro <span class="tag">most teams</span></div>
           <div class="price">$19<small> / private repo / month</small></div>
-          <ul><li>Everything in Open source</li><li>Private repositories</li><li>Configurable rules and severities</li><li>Email support</li></ul>
+          <ul><li>Everything in Open source</li><li>Private repositories</li><li>Configurable rules and severities</li><li>modelsplit board automation for one developer</li><li>Email support</li></ul>
           <a class="btn primary" data-plan="pro" href="#install">Start Pro <span class="arrow">→</span></a>
         </div>
         <div class="card plan reveal">
           <div class="name">Team</div>
           <div class="price">$99<small> / month</small></div>
-          <ul><li>Up to 10 private repositories</li><li>Everything in Pro</li><li>Priority support and rule requests</li><li>Cancel any time</li></ul>
+          <ul><li>Up to 10 private repositories</li><li>Everything in Pro</li><li>modelsplit board automation for the whole team</li><li>Priority support and rule requests</li><li>Cancel any time</li></ul>
           <a class="btn" data-plan="team" href="#install">Start Team</a>
         </div>
       </div>
@@ -261,6 +261,7 @@
         <details><summary>Does it only work on AI-written PRs?</summary><p>It works on any PR. It's built for the ways agents game tests, but a human who deletes a failing test gets the same answer.</p></details>
         <details><summary>Doesn't the revert check slow CI down?</summary><p>It runs your suite twice (once on the PR, once reverted), plus once per file for PRs that touch up to 8 code files. The per-file limit is configurable.</p></details>
         <details><summary>What are its limits?</summary><p>A flaky suite can fake either answer, a build error with the change reverted counts as "caught", and tests that live inside a source file are reverted along with it. Revertgate says which check ran, so you can judge it.</p></details>
+        <details><summary>What is modelsplit?</summary><p>A task board for Claude Code, included with every plan. It splits work into cards, gives each card to a small worker that loads only the tools it needs, and accepts a card only when your checks pass, Revertgate's revert check among them. In our own runs on Claude Opus it cost 5.7 times less than a normal Claude Code session across ten small tasks, and $0.46 against $0.81 on one four-card project; each figure comes from a single run. The demo, lean workers, single cards and the local dashboard are free. Planning a board, running it unattended, resuming a project and dashboard traces need a key, the same one Revertgate uses. <a href="https://github.com/Revertgate/modelsplit/releases/latest">Download modelsplit</a> for Windows or Linux.</p></details>
         <details><summary>Can I see it on real pull requests?</summary><p>Yes: the <a href="https://github.com/Revertgate/demo/pulls">demo repository</a> has three open PRs (honest, cheating and vacuous) with Revertgate's real comments on them.</p></details>
       </div>
     </div>
